@@ -1,4 +1,3 @@
-FROM centos
-COPY centos-7-docker.tar.xz /
+FROM desktop
 COPY bin/ /
 CMD ["/boot.sh"]
