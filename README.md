@@ -18,6 +18,26 @@ docker run -d \
   desktop
 ```
 
+How to run docker (20.10.1) desktop:
+
+The custom seccomp contains two additional syscalls needed for docker (20.10.1) to function.
+ - keyctl
+ - pivot_root
+
+
+```
+docker run -d --rm \
+  --security-opt seccomp=${PWD}/docker-desktop/seccomp.json \
+  --shm-size=1g \
+  -v /sys/fs/cgroup:/sys/fs/cgroup \
+  --cap-add=NET_ADMIN \
+  --cap-add=SYS_ADMIN \
+  -p 9223:3389 \
+  --stop-signal SIGRTMIN+3 \
+  --name desktop \
+  docker-desktop
+```
+
 How to run persistent desktop:
 ```
 export VOLUME_ROOT_NAME=runtime_vdesktop
