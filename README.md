@@ -1,16 +1,47 @@
-## Centos GNOME xrdp Desktop
+# Centos 7 GNOME Desktop
 
-How to build:
+The centos 7 GNOME Desktop image contains xrdp for remote access and docker in docker.
+
+## Login
+
+User: ```user```
+Password: ```password```
+
+## How to build
 ```
-docker build -t systemd base/
+docker build -t systemd systemd/
 docker build -t desktop desktop/
-docker build -t volume-desktop vdesktop/
 ```
 
-How to run ephemeral desktop:
+### Docker in Docker
+
+How to run docker (20.10.1) in the docker desktop:
 ```
-docker run -d \
-  -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+...
+--security-opt seccomp=${PWD}/desktop/seccomp.json \
+-v /sys/fs/cgroup:/sys/fs/cgroup \
+--cap-add=NET_ADMIN \
+--cap-add=SYS_ADMIN \
+...
+```
+
+The custom seccomp contains two additional syscalls needed for docker (20.10.1) to function.
+ - keyctl
+ - pivot_root
+
+## How to run
+
+### Stateless
+
+This desktop will reset on every startup, normal docker behavior.
+
+```
+docker run -d --rm \
+  --device /dev/fuse \
+  --security-opt seccomp=${PWD}/desktop/seccomp.json \
+  --shm-size=1g \
+  -v /sys/fs/cgroup:/sys/fs/cgroup \
+  --cap-add=NET_ADMIN \
   --cap-add=SYS_ADMIN \
   -p 3389:3389 \
   --stop-signal SIGRTMIN+3 \
@@ -18,38 +49,25 @@ docker run -d \
   desktop
 ```
 
-How to run docker (20.10.1) desktop:
+### Stateful
 
-The custom seccomp contains two additional syscalls needed for docker (20.10.1) to function.
- - keyctl
- - pivot_root
+This desktop will behavior like a normal desktop and retain changes between restart.
 
-
-```
-docker run -d --rm \
-  --security-opt seccomp=${PWD}/docker-desktop/seccomp.json \
-  --shm-size=1g \
-  -v /sys/fs/cgroup:/sys/fs/cgroup \
-  --cap-add=NET_ADMIN \
-  --cap-add=SYS_ADMIN \
-  -p 9223:3389 \
-  --stop-signal SIGRTMIN+3 \
-  --name desktop \
-  docker-desktop
-```
-
-How to run persistent desktop:
 ```
 export VOLUME_ROOT_NAME=runtime_vdesktop
 export VOLUME_ROOT=/runtime_root
 
-docker run -d  \
+docker run -d --rm \
   -e VOLUME_ROOT=${VOLUME_ROOT} \
   -v ${VOLUME_ROOT_NAME}:${VOLUME_ROOT} \
-  -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+  --device /dev/fuse \
+  --security-opt seccomp=${PWD}/desktop/seccomp.json \
+  --shm-size=1g \
+  -v /sys/fs/cgroup:/sys/fs/cgroup \
+  --cap-add=NET_ADMIN \
   --cap-add=SYS_ADMIN \
   -p 3389:3389 \
   --stop-signal SIGRTMIN+3 \
   --name desktop \
-  vdesktop
+  desktop
 ```

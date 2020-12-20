@@ -1,0 +1,6 @@
+#!/bin/bash
+sleep 3
+while ! systemctl is-active --quiet systemd-journald ; do
+ sleep 1
+done
+journalctl -f

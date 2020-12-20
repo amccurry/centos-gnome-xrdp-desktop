@@ -17,6 +17,7 @@ if [ -f ${VOLUME_CHROOT_INSTALL_DIR}/.setup ] ; then
   exit 0
 fi
 
+echo "inital startup, rsync the container filesystem"
 # Install current image into volume
 rsync --exclude '/dev/*' --exclude '/proc/*' --exclude '/sys/*' --exclude "${VOLUME_CHROOT_INSTALL_DIR}/*" -a / ${VOLUME_CHROOT_INSTALL_DIR}
 cd ${VOLUME_CHROOT_INSTALL_DIR}
