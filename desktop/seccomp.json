@@ -54,7 +54,7 @@
 			"names": [
         "keyctl",
         "pivot_root",
-        
+
 				"accept",
 				"accept4",
 				"access",
