@@ -1,4 +1,4 @@
-FROM systemd
+FROM local/systemd
 RUN yum -y groupinstall "GNOME Desktop"
 RUN yum -y update
 COPY opt/desktop/ /opt/desktop/

@@ -9,8 +9,8 @@ Password: ```password```
 
 ## How to build
 ```
-docker build -t systemd systemd/
-docker build -t desktop desktop/
+docker build -t local/systemd systemd/
+docker build -t local/desktop desktop/
 ```
 
 ### Docker in Docker
